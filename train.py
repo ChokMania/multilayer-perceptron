@@ -31,7 +31,27 @@ if __name__ == "__main__":
 			elif values[0] == "B":
 				targets[1] = 0.99
 			n.train(np.array(values[1:], dtype=np.float64), targets)
+			# print(f"epoch {e:>3}/{epochs:<3} - loss: {} - val_loss: {}")
 		pass
 
 
-	# enregistrer
+	test = df.iloc[455:, :]  # 20 %
+	scorecard = []
+
+	test = normalize(test)
+	test = np.array(test)
+
+	for values in np.array(test):#ici aussi on peut cut
+		correct_label = values[0]
+		outputs = n.query(np.array(values[1:], dtype=np.float64))
+		label = np.argmax(outputs)
+		if label == 0:
+			label = "M"
+		else:
+			label = "B"
+		if (label == correct_label):
+			scorecard.append(1)
+		else:
+			scorecard.append(0)
+	scorecard_array = np.asarray(scorecard)
+	print("performance = ", scorecard_array.sum() / scorecard_array.size)

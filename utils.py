@@ -1,3 +1,4 @@
+from math import log
 import numpy as np
 import pandas as pd
 import sys
@@ -29,3 +30,12 @@ def normalize(df):
 			result[feature_name] = (df[feature_name] / max_value * 0.99) + 0.01
 			# result[feature_name] = (df[feature_name] - min_value) / (max_value - min_value)
 	return result
+
+
+# calculate binary cross entropy
+def binary_cross_entropy(actual, predicted):
+	sum_score = 0.0
+	for i in range(len(actual)):
+		sum_score += actual[i] * log(1e-15 + predicted[i])
+	mean_sum_score = 1.0 / len(actual) * sum_score
+	return -mean_sum_score
