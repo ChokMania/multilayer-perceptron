@@ -2,21 +2,16 @@ import argparse
 from neuralNetwork import neuralNetwork
 import numpy as np
 from utils import open_datafile, normalize
+import pickle
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="")
 	parser.add_argument("data", type=open_datafile)
 	args = parser.parse_args()
-
-	input_nodes = 30
-	# nb_hidden_layers = 4
-	hidden_nodes = 8
-	output_nodes = 2
-	learning_rate = 0.1
-
-	n = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
-	epochs = 50
-
+	try:
+		n = pickle.load(open("model.p", "rb" ))
+	except:
+		sys.exit("Error can't load model.p")
 	df = args.data.drop(args.data.columns[0], axis=1)
 	test = df.iloc[455:, :]  # 20 %
 	scorecard = []
