@@ -1,3 +1,5 @@
+from activations_fun import sigmoid, relu, softmax
+import argparse
 from math import log
 import numpy as np
 from os import path, mkdir
@@ -17,10 +19,6 @@ def open_datafile(datafile):
 	except:
 		sys.exit(f"File {datafile} corrupted or does not exist.")
 	return data
-
-
-def sigmoid(x):
-	return(1 / (1 + np.exp(-x)))
 
 
 def normalize(df):
