@@ -7,7 +7,6 @@ from activations_fun import sigmoid, relu, softmax
 
 dict_act_fun = {"sigmoid": sigmoid, "relu": relu, "softmax": softmax}
 
-
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="")
 	parser.add_argument("dataset_train", type=open_datafile)
@@ -34,8 +33,8 @@ if __name__ == "__main__":
 	validation_data = np.array(validation_data)
 	best_val_loss = 1
 	patience = 0
-	loss_history = []
-	val_loss_history = []
+	loss_history = [binary_cross_entropy(data, n)]
+	val_loss_history = [binary_cross_entropy(validation_data, n)]
 	for e in range(epochs):
 		for values in data:
 			targets = np.zeros(output_n) + 0.01

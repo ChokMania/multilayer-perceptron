@@ -8,11 +8,27 @@ import pandas as pd
 import pickle
 import sys
 
+def on_press(event, loss, val_loss, fig, ax):
+	if event.button != 1:
+		return
+	x, y = event.xdata, event.ydata
+	if x is not None and y is not None:
+		ax[1].set_xlim(int(x), len(val_loss))
+		ax[1].set_ylim(0, max(max(loss[int(x):]), max(val_loss[int(x):])))
+		fig.canvas.draw()
 
 def display(loss, val_loss):
-	plt.plot(loss)
-	plt.plot(val_loss)
+	fig, ax = plt.subplots(2, 1, constrained_layout=True)
+	ax[0].set(title='Error Progression', ylabel="Error", xlabel="Epochs")
+	ax[1].set(title='Zoomed window')
+	ax[0].plot(loss, label="loss")
+	ax[1].plot(range(0 ,len(loss)), loss[0:], label="loss")
+	ax[0].plot(val_loss, label="val_loss")
+	ax[1].plot(range(0 ,len(val_loss)), val_loss[0:], label="val_loss")
+	ax[0].legend(title='Parameter where:')
+	fig.canvas.mpl_connect('button_press_event', lambda event: on_press(event, loss, val_loss, fig, ax))
 	plt.show()
+
 
 def open_datafile(datafile):
 	try:
