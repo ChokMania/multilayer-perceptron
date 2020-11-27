@@ -6,10 +6,10 @@ def sigmoid(x):
 
 
 def relu(x):
-	return np.maximum(0, x)
+	return(np.max(x, 0))
 
 
 def softmax(x):
 	expo = np.exp(x)
 	expo_sum = np.sum(np.exp(x))
-	return expo/expo_sum
+	return expo / expo_sum

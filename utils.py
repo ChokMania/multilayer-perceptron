@@ -1,12 +1,18 @@
 from activations_fun import sigmoid, relu, softmax
 import argparse
 from math import log
+import matplotlib.pyplot as plt
 import numpy as np
 from os import path, mkdir
 import pandas as pd
 import pickle
 import sys
 
+
+def display(loss, val_loss):
+	plt.plot(loss)
+	plt.plot(val_loss)
+	plt.show()
 
 def open_datafile(datafile):
 	try:
@@ -66,3 +72,4 @@ def save_model(n):
 		i += 1
 	with open("models/model_" + str(i) + ".p", "wb") as fp:
 		pickle.dump(n, fp)
+		print(f"Model saved in file models/model_{str(i)}.p")
