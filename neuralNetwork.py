@@ -1,6 +1,7 @@
 import numpy as np
 from activations_fun import softmax
 
+
 class neuralNetwork:
 
 	def __init__(self, n_input, n_output, hidden_layers, learningrate, activation_function):
@@ -30,7 +31,6 @@ class neuralNetwork:
 		hidden_outputs.insert(0, inputs)
 		return hidden_outputs
 
-
 	def backward_propagation(self, output_errors, hidden_outputs, inputs):
 		for i in range(1, len(self.w) + 1):
 			if i == 1:
@@ -38,7 +38,6 @@ class neuralNetwork:
 			else:
 				error = np.dot(self.w[-(i - 1)].T, error)
 			self.w[-i] += self.lr * np.dot((error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])), hidden_outputs[-(i + 1)].T)
-
 
 	def train(self, inputs_list, targets_list):
 		inputs = np.array(inputs_list, ndmin=2).T

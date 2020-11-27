@@ -1,5 +1,3 @@
-from activations_fun import sigmoid, relu, softmax
-import argparse
 from math import log
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,6 +5,7 @@ from os import path, mkdir
 import pandas as pd
 import pickle
 import sys
+
 
 def on_press(event, loss, val_loss, fig, ax):
 	if event.button != 1:
@@ -17,17 +16,28 @@ def on_press(event, loss, val_loss, fig, ax):
 		ax[1].set_ylim(0, max(max(loss[int(x):]), max(val_loss[int(x):])))
 		fig.canvas.draw()
 
+
 def display(loss, val_loss):
 	fig, ax = plt.subplots(2, 1, constrained_layout=True)
 	ax[0].set(title='Error Progression', ylabel="Error", xlabel="Epochs")
 	ax[1].set(title='Zoomed window')
 	ax[0].plot(loss, label="loss")
-	ax[1].plot(range(0 ,len(loss)), loss[0:], label="loss")
+	ax[1].plot(range(0, len(loss)), loss[0:], label="loss")
 	ax[0].plot(val_loss, label="val_loss")
-	ax[1].plot(range(0 ,len(val_loss)), val_loss[0:], label="val_loss")
+	ax[1].plot(range(0, len(val_loss)), val_loss[0:], label="val_loss")
 	ax[0].legend(title='Parameter where:')
 	fig.canvas.mpl_connect('button_press_event', lambda event: on_press(event, loss, val_loss, fig, ax))
 	plt.show()
+
+
+def check_hidden_layer(hl_list):
+	try:
+		hl_list = hl_list.split(",")
+		result = tuple(int(i) for i in hl_list)
+		print(result)
+	except:
+		sys.exit("Failed to create hidden layers")
+	return result
 
 
 def open_datafile(datafile):
@@ -53,6 +63,13 @@ def normalize(df):
 			# result[feature_name] = (df[feature_name] - min_value) / (max_value - min_value)
 	return result
 
+# def get_accuracy(actual, predicted):
+# 	good = 0
+# 	for index in actual:
+# 		if actual[index] == np.argmax(predicted[index]):
+# 			good += 1
+# 	return good / len(actual)
+
 
 def binary_cross_entropy(real, n):
 	predicted = []
@@ -63,10 +80,11 @@ def binary_cross_entropy(real, n):
 		predicted_values = n.query(np.array(actual[index][1:], dtype=np.float64))[::-1]
 		predicted.append(predicted_values)
 	actual, sum_ = actual[:, 0], 0
+	# acc = get_accuracy(actual, predicted)
 	for index in range(len(actual)):
 		sum_ += log(predicted[index][actual[index]])
 	error = (-1 / len(actual)) * sum_
-	return error
+	return error, 0
 
 
 def load_model(file):

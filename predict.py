@@ -9,8 +9,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	n = load_model(args.model)
 	test = args.dataset_test.drop(args.dataset_test.columns[0], axis=1)
-	predicted = []
 	test = normalize(test)
 	test = np.array(test)
-	error = binary_cross_entropy(test, n)
+	error, _ = binary_cross_entropy(test, n)
 	print(f"Cross Binary Entropy Error = {error:.5f}")
