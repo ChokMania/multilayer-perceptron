@@ -18,6 +18,10 @@ class neuralNetwork:
 			self.w.append(np.random.normal(0.0, pow(self.hidden, -0.5), (self.output, self.hidden)))
 		self.lr = learningrate
 		self.activation_function = activation_function
+		self.loss = []
+		self.val_loss = []
+		self.acc = []
+		self.val_acc = []
 
 	def feedforward(self, inputs):
 		hidden_inputs = []

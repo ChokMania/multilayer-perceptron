@@ -7,27 +7,30 @@ import pickle
 import sys
 
 
-def on_press(event, loss, val_loss, fig, ax):
+def on_press(event, var, val_var, fig, ax):
 	if event.button != 1:
 		return
 	x, y = event.xdata, event.ydata
-	if x is not None and y is not None:
-		ax[1].set_xlim(int(x), len(val_loss))
-		ax[1].set_ylim(0, max(max(loss[int(x):]), max(val_loss[int(x):])))
+	val = int(x)
+	if x is not None and y is not None and val < len(var) and val < len(val_var):
+		minimum = min(min(var[val:]), min(val_var[val:]))
+		maximum = max(max(var[val:]), max(val_var[val:]))
+		ax[1].set_xlim(val, len(val_var))
+		ax[1].set_ylim(minimum - (minimum * 0.1), maximum + (maximum * 0.1))
 		fig.canvas.draw()
 
 
-def display(loss, val_loss):
+def display(car, val_car, title, param1, param2):
 	fig, ax = plt.subplots(2, 1, constrained_layout=True)
-	ax[0].set(title='Error Progression', ylabel="Error", xlabel="Epochs")
+	ax[0].set(title=title, ylabel="Error", xlabel="Epochs")
 	ax[1].set(title='Zoomed window')
-	ax[0].plot(loss, label="loss")
-	ax[1].plot(range(0, len(loss)), loss[0:], label="loss")
-	ax[0].plot(val_loss, label="val_loss")
-	ax[1].plot(range(0, len(val_loss)), val_loss[0:], label="val_loss")
+	ax[0].plot(car, label=param1)
+	ax[1].plot(range(0, len(car)), car[0:], label=param1)
+	ax[0].plot(val_car, label=param2)
+	ax[1].plot(range(0, len(val_car)), val_car[0:], label=param2)
 	ax[0].legend(title='Parameter where:')
-	fig.canvas.mpl_connect('button_press_event', lambda event: on_press(event, loss, val_loss, fig, ax))
-	plt.show()
+	fig.canvas.mpl_connect('button_press_event', lambda event: on_press(event, car, val_car, fig, ax))
+	return fig, ax
 
 
 def check_hidden_layer(hl_list):
@@ -63,28 +66,65 @@ def normalize(df):
 			# result[feature_name] = (df[feature_name] - min_value) / (max_value - min_value)
 	return result
 
-# def get_accuracy(actual, predicted):
-# 	good = 0
-# 	for index in actual:
-# 		if actual[index] == np.argmax(predicted[index]):
-# 			good += 1
-# 	return good / len(actual)
 
-
-def binary_cross_entropy(real, n):
+def processing(real, n):
 	predicted = []
 	actual = np.copy(real)
-	actual[actual[:, 0] == "B"] = 0
-	actual[actual[:, 0] == "M"] = 1
+	for val in actual:
+		if val[0] == "B":
+			val[0] = 0
+		if val[0] == "M":
+			val[0] = 1
 	for index in range(len(actual)):
 		predicted_values = n.query(np.array(actual[index][1:], dtype=np.float64))[::-1]
 		predicted.append(predicted_values)
-	actual, sum_ = actual[:, 0], 0
-	# acc = get_accuracy(actual, predicted)
+	return actual[:, 0], predicted
+
+
+def roc(real, n):
+	actual, predicted = processing(real, n)
+	pred = np.zeros(len(predicted))
+	for i in range(len(predicted)):
+		pred[i] = predicted[i][1]
+	actual = np.int64(np.array(actual))
+	thresholds = np.linspace(1, 0, 1001)
+	roc = np.zeros((1001, 2))
+	for i in range(1001):
+		t = thresholds[i]
+		tp = np.logical_and(pred > t, actual == 1).sum()
+		tn = np.logical_and(pred <= t, actual == 0).sum()
+		fp = np.logical_and(pred > t, actual == 0).sum()
+		fn = np.logical_and(pred <= t, actual == 1).sum()
+		r_fp = fp / float(fp + tn)
+		roc[i, 0] = r_fp
+		r_tp = tp / float(tp + fn)
+		roc[i, 1] = r_tp
+	auc = 0.
+	for i in range(1000):
+		auc += (roc[i + 1, 0] - roc[i, 0]) * (roc[i + 1, 1] + roc[i, 1])
+	auc *= 0.5
+	plt.figure(figsize=(6, 6))
+	plt.plot(roc[:, 0], roc[:, 1], "k", label="ROC curve")
+	plt.plot([0, 1], "r--", label="Random guess")
+	plt.xlim(-0.05, 1.05)
+	plt.ylim(-0.05, 1.05)
+	plt.legend()
+	plt.xlabel("False Positive Rate")
+	plt.ylabel("True Positive Rate")
+	plt.title(f"ROC curve, AUC = {auc:.4f}")
+	plt.show()
+
+
+def binary_cross_entropy(real, n):
+	actual, predicted = processing(real, n)
+	sum_, good = 0, 0
 	for index in range(len(actual)):
 		sum_ += log(predicted[index][actual[index]])
+		if actual[index] == np.argmax(predicted[index]):
+			good += 1
 	error = (-1 / len(actual)) * sum_
-	return error, 0
+	acc = good / len(actual)
+	return error, acc
 
 
 def load_model(file):

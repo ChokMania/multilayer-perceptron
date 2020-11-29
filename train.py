@@ -4,6 +4,7 @@ from neuralNetwork import neuralNetwork
 import numpy as np
 from utils import open_datafile, normalize, save_model, binary_cross_entropy, display, check_hidden_layer
 from activations_fun import sigmoid
+import matplotlib.pyplot as plt
 
 
 def fit(args, n):
@@ -17,14 +18,16 @@ def fit(args, n):
 
 	data = np.array(data)
 	validation_data = np.array(validation_data)
-	best_val_loss = 1
+	best_val_loss = 10
+	best_loss = 10
 	patience = 0
-
-	loss, _ = binary_cross_entropy(data, n)
-	val_loss, _ = binary_cross_entropy(validation_data, n)
-	loss_history = [loss]
-	val_loss_history = [val_loss]
-	# print(f"epoch {0:>3}/{epochs:<3} - loss: {loss:10.10f} - val_loss: {val_loss:10.10f}", end="\r")
+	loss, acc = binary_cross_entropy(data, n)
+	n.loss.append(loss)
+	n.acc.append(acc)
+	val_loss, val_acc = binary_cross_entropy(validation_data, n)
+	n.val_loss.append(val_loss)
+	n.val_acc.append(val_acc)
+	print(f"epoch {e:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
 	for e in range(epochs):
 		for values in data:
 			targets = np.zeros(output_n) + 0.01
@@ -34,35 +37,37 @@ def fit(args, n):
 				targets[1] = 0.99
 			n.train(np.array(values[1:], dtype=np.float64), targets)
 		loss, acc = binary_cross_entropy(data, n)
+		n.loss.append(loss)
+		n.acc.append(acc)
 		val_loss, val_acc = binary_cross_entropy(validation_data, n)
-		loss_history.append(loss)
-		val_loss_history.append(val_loss)
-		print(f"epoch {e + 1:>3}/{epochs:<3} - loss: {loss:10.10f} - val_loss: {val_loss:10.10f}", end="\r")
-		if val_loss < best_val_loss:
+		n.val_loss.append(val_loss)
+		n.val_acc.append(val_acc)
+		print(f"epoch {e + 1:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
+		if val_loss < best_val_loss and loss < best_loss:
 			best_val_loss = val_loss
+			best_loss = loss
 			saved = deepcopy(n.w)
 			patience = 0
 		else:
 			if patience == args.patience:
-				print(f"\nEarly stopping, step back to epoch {e - args.patience}")
+				epoch = e - args.patience - 1
+				print(f"\nEarly stopping, step back to epoch {epoch}")
 				n.w = saved[:]
-				loss, acc = binary_cross_entropy(data, n)
-				val_loss, val_acc = binary_cross_entropy(validation_data, n)
-				print(f"loss: {loss:10.10f} - val_loss: {val_loss:10.10f}")
-				loss_history = loss_history[:-(patience + 1)]
-				val_loss_history = val_loss_history[:-(patience + 1)]
+				n.loss = n.loss[:epoch + 2]
+				n.val_loss = n.val_loss[:epoch + 2]
+				n.acc = n.acc[:epoch + 2]
+				n.val_acc = n.val_acc[:epoch + 2]
+				print(f"loss: {n.loss[-1]:10.10f} - acc {n.acc[-1]:5.5f} - val_loss: {n.val_loss[-1]:10.10f} - val_acc {n.val_acc[-1]:5.5f}")
 				break
 			patience += 1
-	return loss_history, val_loss_history
 
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="")
 	parser.add_argument("dataset_train", type=open_datafile)
-	# parser.add_argument("-af", "--activation_function", help="Choose the activation function", choices={"sigmoid", "relu", "softmax"}, default="sigmoid")
 	parser.add_argument("-e", "--epochs", metavar="n", help="Choose number of epochs", type=int, default=50)
 	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=-1)
-	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(30, 30))
+	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(10, 10))
 	parser.add_argument("-vi", "--visu", help="Display graphs", action="store_true")
 	args = parser.parse_args()
 	input_n = 30
@@ -71,8 +76,10 @@ if __name__ == "__main__":
 	learning_rate = 0.1
 	n = neuralNetwork(input_n, output_n, hidden_layers, learning_rate, sigmoid)
 
-	loss_history, val_loss_history = fit(args, n)
-	if args.visu is True:
-		display(loss_history, val_loss_history)
+	fit(args, n)
 	print()
+	if args.visu is True:
+		fig1, ax1 = display(n.loss, n.val_loss, "Loss Trend", "loss", "val_loss")
+		fig2, ax2 = display(n.acc, n.val_acc, "Accuracy Trend", "acc", "val_acc")
+		plt.show()
 	save_model(n)
