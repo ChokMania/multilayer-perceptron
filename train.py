@@ -27,7 +27,7 @@ def fit(args, n):
 	val_loss, val_acc = binary_cross_entropy(validation_data, n)
 	n.val_loss.append(val_loss)
 	n.val_acc.append(val_acc)
-	print(f"epoch {e:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
+	print(f"epoch {0:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
 	for e in range(epochs):
 		for values in data:
 			targets = np.zeros(output_n) + 0.01
