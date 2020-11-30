@@ -19,7 +19,6 @@ def fit(args, n):
 	data = np.array(data)
 	validation_data = np.array(validation_data)
 	best_val_loss = 10
-	best_loss = 10
 	patience = 0
 	loss, acc = binary_cross_entropy(data, n)
 	n.loss.append(loss)
@@ -29,6 +28,7 @@ def fit(args, n):
 	n.val_acc.append(val_acc)
 	print(f"epoch {0:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
 	for e in range(epochs):
+		np.random.shuffle(data)
 		for values in data:
 			targets = np.zeros(output_n) + 0.01
 			if values[0] == "M":
@@ -43,7 +43,7 @@ def fit(args, n):
 		n.val_loss.append(val_loss)
 		n.val_acc.append(val_acc)
 		print(f"epoch {e + 1:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
-		if val_loss < best_val_loss and loss < best_loss:
+		if val_loss < best_val_loss:
 			best_val_loss = val_loss
 			best_loss = loss
 			saved = deepcopy(n.w)
