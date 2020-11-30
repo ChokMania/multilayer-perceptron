@@ -65,6 +65,7 @@ def fit(args, n):
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="")
 	parser.add_argument("dataset_train", type=open_datafile)
+	parser.add_argument("-b", "--bias", help="Enable Bias", action="store_true")
 	parser.add_argument("-e", "--epochs", metavar="n", help="Choose number of epochs", type=int, default=200)
 	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=20)
 	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(30, 20))
@@ -74,7 +75,7 @@ if __name__ == "__main__":
 	output_n = 2
 	hidden_layers = args.hidden_layer
 	learning_rate = 0.1
-	n = neuralNetwork(input_n, output_n, hidden_layers, learning_rate, sigmoid)
+	n = neuralNetwork(input_n, output_n, hidden_layers, learning_rate, sigmoid, args.bias)
 
 	fit(args, n)
 	print()
