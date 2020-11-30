@@ -24,17 +24,18 @@ class neuralNetwork:
 		self.acc = []
 		self.val_acc = []
 		self.bias = []
+		self.bias_lr = 0.01
 		for i in range(len(self.w)):
-			self.bias.append(np.zeros(self.w[i].shape[1]))
+			self.bias.append(np.zeros((self.w[i].shape[0], 1)))
 
 	def feedforward(self, inputs):
 		hidden_inputs = []
 		hidden_outputs = []
 		for i in range(len(self.w)):
 			if i == 0:
-				hidden_inputs.append(np.dot(self.w[i], inputs) + self.bias[i])
+				hidden_inputs.append((np.dot(self.w[i], inputs) + self.bias[i]))
 			else:
-				hidden_inputs.append(np.dot(self.w[i], hidden_outputs[i - 1]) + self.bias[i])
+				hidden_inputs.append((np.dot(self.w[i], hidden_outputs[i - 1]) + self.bias[i]))
 			hidden_outputs.append(self.activation_function(hidden_inputs[i]))
 		hidden_outputs.insert(0, inputs)
 		return hidden_outputs
@@ -43,12 +44,11 @@ class neuralNetwork:
 		for i in range(1, len(self.w) + 1):
 			if i == 1:
 				error = output_errors
-
 			else:
 				error = np.dot(self.w[-(i - 1)].T, error)
 			self.w[-i] += self.lr * np.dot((error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])), hidden_outputs[-(i + 1)].T)
 			if self.add_bias is True:
-				self.bias[-i] += self.lr * (error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i]))
+				self.bias[-i] += self.bias_lr * (error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i]))
 
 	def train(self, inputs_list, targets_list):
 		inputs = np.array(inputs_list, ndmin=2).T
@@ -61,7 +61,7 @@ class neuralNetwork:
 		value = np.array(inputs_lists, ndmin=2).T
 		for layer in range(len(self.w)):
 			if layer == len(self.w) - 1:
-				value = softmax(np.dot(self.w[layer], value))
+				value = softmax(np.dot(self.w[layer], value) + self.bias[layer])
 			else:
-				value = self.activation_function(np.dot(self.w[layer], value))
+				value = self.activation_function(np.dot(self.w[layer], value) + self.bias[layer])
 		return value
