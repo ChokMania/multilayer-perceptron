@@ -65,9 +65,9 @@ def fit(args, n):
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="")
 	parser.add_argument("dataset_train", type=open_datafile)
-	parser.add_argument("-e", "--epochs", metavar="n", help="Choose number of epochs", type=int, default=50)
-	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=-1)
-	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(10, 10))
+	parser.add_argument("-e", "--epochs", metavar="n", help="Choose number of epochs", type=int, default=200)
+	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=20)
+	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(30, 20))
 	parser.add_argument("-vi", "--visu", help="Display graphs", action="store_true")
 	args = parser.parse_args()
 	input_n = 30

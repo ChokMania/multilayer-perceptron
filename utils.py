@@ -37,7 +37,6 @@ def check_hidden_layer(hl_list):
 	try:
 		hl_list = hl_list.split(",")
 		result = tuple(int(i) for i in hl_list)
-		print(result)
 	except:
 		sys.exit("Failed to create hidden layers")
 	return result
@@ -61,9 +60,9 @@ def normalize(df):
 	for feature_name in df.columns[1:]:
 		if feature_name != 0:
 			max_value = df[feature_name].max()
-			# min_value = df[feature_name].min()²
-			result[feature_name] = (df[feature_name] / max_value * 0.99) + 0.01
-			# result[feature_name] = (df[feature_name] - min_value) / (max_value - min_value)
+			min_value = df[feature_name].min()
+			# result[feature_name] = (df[feature_name] / max_value * 0.99) + 0.01
+			result[feature_name] = (df[feature_name] - min_value) / (max_value - min_value)
 	return result
 
 
