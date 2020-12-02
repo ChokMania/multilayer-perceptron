@@ -118,10 +118,10 @@ def binary_cross_entropy(real, n):
 	actual, predicted = processing(real, n)
 	sum_, good = 0, 0
 	for index in range(len(actual)):
-		sum_ += log(predicted[index][actual[index]])
+		sum_ += -log(predicted[index][actual[index]])
 		if actual[index] == np.argmax(predicted[index]):
 			good += 1
-	error = (-1 / len(actual)) * sum_
+	error = (1 / len(actual)) * sum_
 	acc = good / len(actual)
 	return error, acc
 

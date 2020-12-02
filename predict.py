@@ -11,7 +11,8 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 	n = load_model(args.model)
-	test = args.dataset_test.drop(args.dataset_test.columns[0], axis=1)
+	# test = args.dataset_test.drop(args.dataset_test.columns[0], axis=1)
+	test = args.dataset_test[[1, 2, 3, 8, 11, 12, 17, 18, 19, 21, 26, 28, 30, 31]]
 	test = normalize(test)
 	test = np.array(test)
 	error, acc = binary_cross_entropy(test, n)

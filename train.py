@@ -5,12 +5,16 @@ import numpy as np
 from utils import open_datafile, normalize, save_model, binary_cross_entropy, display, check_hidden_layer
 from activations_fun import sigmoid
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def fit(args, n):
 	epochs = args.epochs
-	df = args.dataset_train.drop(args.dataset_train.columns[0], axis=1)
-	size_train = int(len(df) * 0.8)
+	# df = args.dataset_train.drop(args.dataset_train.columns[0], axis=1)
+	df = args.dataset_train[[1, 2, 3, 8, 11, 12, 17, 18, 19, 21, 26, 28, 30, 31]]
+	# sns.pairplot(df, hue=df.columns.values.tolist()[0], palette="husl", markers=".")
+	# plt.show()
+	size_train = int(len(df) * 0.5)
 	train = df.iloc[:size_train, :]  # 80 %
 	test = df.iloc[size_train + 1:, :]  # 20 %
 	data = normalize(train)
@@ -65,11 +69,11 @@ if __name__ == "__main__":
 	parser.add_argument("dataset_train", type=open_datafile)
 	parser.add_argument("-b", "--bias", help="Enable Bias", action="store_true")
 	parser.add_argument("-e", "--epochs", metavar="n", help="Choose number of epochs", type=int, default=200)
-	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=20)
+	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=-1)
 	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(21, 21))
 	parser.add_argument("-vi", "--visu", help="Display graphs", action="store_true")
 	args = parser.parse_args()
-	input_n = 30
+	input_n = 13
 	output_n = 2
 	hidden_layers = args.hidden_layer
 	learning_rate = 0.01
