@@ -74,7 +74,7 @@ if __name__ == "__main__":
 	input_n = 30
 	output_n = 2
 	hidden_layers = args.hidden_layer
-	learning_rate = 0.1
+	learning_rate = 0.01
 	n = neuralNetwork(input_n, output_n, hidden_layers, learning_rate, sigmoid, args.bias)
 
 	fit(args, n)
