@@ -15,7 +15,6 @@ def fit(args, n):
 	test = df.iloc[size_train + 1:, :]  # 20 %
 	data = normalize(train)
 	validation_data = normalize(test)
-
 	data = np.array(data)
 	validation_data = np.array(validation_data)
 	best_val_loss = 10
@@ -45,7 +44,6 @@ def fit(args, n):
 		print(f"epoch {e + 1:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
 		if val_loss < best_val_loss:
 			best_val_loss = val_loss
-			best_loss = loss
 			saved = deepcopy(n.w)
 			patience = 0
 		else:
@@ -68,7 +66,7 @@ if __name__ == "__main__":
 	parser.add_argument("-b", "--bias", help="Enable Bias", action="store_true")
 	parser.add_argument("-e", "--epochs", metavar="n", help="Choose number of epochs", type=int, default=200)
 	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=20)
-	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(30, 20))
+	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(21, 21))
 	parser.add_argument("-vi", "--visu", help="Display graphs", action="store_true")
 	args = parser.parse_args()
 	input_n = 30
