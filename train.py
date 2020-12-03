@@ -1,20 +1,22 @@
+from activations_fun import sigmoid
 import argparse
 from copy import deepcopy
+import matplotlib.pyplot as plt
 from neuralNetwork import neuralNetwork
 import numpy as np
-from utils import open_datafile, normalize, save_model, binary_cross_entropy, display, check_hidden_layer
-from activations_fun import sigmoid
-import matplotlib.pyplot as plt
-import seaborn as sns
+from utils import open_datafile, normalize, save_model, binary_cross_entropy, display, check_hidden_layer, get_seed, append_losses, split_size
 
 
 def fit(args, n):
 	epochs = args.epochs
 	# df = args.dataset_train.drop(args.dataset_train.columns[0], axis=1)
 	df = args.dataset_train[[1, 2, 3, 8, 11, 12, 17, 18, 19, 21, 26, 28, 30, 31]]
-	# sns.pairplot(df, hue=df.columns.values.tolist()[0], palette="husl", markers=".")
-	# plt.show()
-	size_train = int(len(df) * 0.5)
+	size_train = int(len(df) * args.split / 100)
+	print(f"Total data:\t{len(df):>4} values")
+	print(f"Train data:\t{size_train:>4} values, {args.split:>3}%")
+	print(f"Val data:\t{len(df) - size_train:>4} values, {100 - args.split:>3}% ")
+	print(f"Input:\t{n.input} neurones")
+	print(f"Output:\t{n.output} neurones")
 	train = df.iloc[:size_train, :]  # 80 %
 	test = df.iloc[size_train + 1:, :]  # 20 %
 	data = normalize(train)
@@ -23,12 +25,7 @@ def fit(args, n):
 	validation_data = np.array(validation_data)
 	best_val_loss = 10
 	patience = 0
-	loss, acc = binary_cross_entropy(data, n)
-	n.loss.append(loss)
-	n.acc.append(acc)
-	val_loss, val_acc = binary_cross_entropy(validation_data, n)
-	n.val_loss.append(val_loss)
-	n.val_acc.append(val_acc)
+	loss, val_loss, acc, val_acc = append_losses(n, data, validation_data)
 	print(f"epoch {0:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
 	for e in range(epochs):
 		np.random.shuffle(data)
@@ -39,12 +36,7 @@ def fit(args, n):
 			elif values[0] == "B":
 				targets[1] = 0.99
 			n.train(np.array(values[1:], dtype=np.float64), targets)
-		loss, acc = binary_cross_entropy(data, n)
-		n.loss.append(loss)
-		n.acc.append(acc)
-		val_loss, val_acc = binary_cross_entropy(validation_data, n)
-		n.val_loss.append(val_loss)
-		n.val_acc.append(val_acc)
+		loss, val_loss, acc, val_acc = append_losses(n, data, validation_data)
 		print(f"epoch {e + 1:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
 		if val_loss < best_val_loss:
 			best_val_loss = val_loss
@@ -72,14 +64,16 @@ if __name__ == "__main__":
 	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=-1)
 	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(21, 21))
 	parser.add_argument("-vi", "--visu", help="Display graphs", action="store_true")
-	parser.add_argument("-s", "--seed", metavar="n", help="Choose seed", type=int, default=None)
+	parser.add_argument("-s", "--seed", metavar="n", help="Choose seed", default=None)
+	parser.add_argument("--split", metavar="[1-99]", help="Choose size of split", choices=(range(1, 100)), type=split_size, default=80)
+
 	args = parser.parse_args()
+	get_seed(args.seed)
 	input_n = 13
 	output_n = 2
 	hidden_layers = args.hidden_layer
 	learning_rate = 0.01
-	n = neuralNetwork(input_n, output_n, hidden_layers, learning_rate, sigmoid, args.bias, args.seed)
-
+	n = neuralNetwork(input_n, output_n, hidden_layers, learning_rate, sigmoid, args.bias)
 	fit(args, n)
 	print()
 	if args.visu is True:

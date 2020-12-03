@@ -1,3 +1,4 @@
+import argparse
 from math import log
 import matplotlib.pyplot as plt
 import numpy as np
@@ -126,6 +127,16 @@ def binary_cross_entropy(real, n):
 	return error, acc
 
 
+def append_losses(n, data, validation_data):
+	loss, acc = binary_cross_entropy(data, n)
+	n.loss.append(loss)
+	n.acc.append(acc)
+	val_loss, val_acc = binary_cross_entropy(validation_data, n)
+	n.val_loss.append(val_loss)
+	n.val_acc.append(val_acc)
+	return loss, val_loss, acc, val_acc
+
+
 def load_model(file):
 	try:
 		with open(file, "rb") as fp:
@@ -146,3 +157,22 @@ def save_model(n):
 	with open("models/model_" + str(i) + ".p", "wb") as fp:
 		pickle.dump(n, fp)
 		print(f"Model saved in file models/model_{str(i)}.p")
+
+
+def get_seed(n):
+	try:
+		n = int(n)
+	except (ValueError, TypeError):
+		if n is None:
+			n = np.random.randint(1, 4294967295)
+		else:
+			sys.exit(f"Value '{n}'' is not a correct value, need to be an int")
+	np.random.seed(int(n))
+	print(f"Seed : {np.random.get_state()[1][0]}")
+
+
+def split_size(n):
+	value = int(n)
+	if value not in range(1, 100):
+		raise argparse.ArgumentTypeError(f"{value} is out of range, choose in [1-99]")
+	return value

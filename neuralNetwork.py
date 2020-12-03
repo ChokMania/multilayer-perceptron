@@ -4,12 +4,10 @@ from activations_fun import softmax
 
 class neuralNetwork:
 
-	def __init__(self, n_input, n_output, hidden_layers, learningrate, activation_function, bias, seed):
+	def __init__(self, n_input, n_output, hidden_layers, learningrate, activation_function, bias):
 		self.input = n_input
 		self.output = n_output
 		self.hidden = hidden_layers
-		np.random.seed(seed)
-		print(np.random.get_state())
 		if type(self.hidden) is tuple:
 			self.w = [np.random.normal(0.0, pow(self.input, -0.5), (self.hidden[0], self.input))]
 			for i in range(len(self.hidden) - 1):
