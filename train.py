@@ -72,12 +72,13 @@ if __name__ == "__main__":
 	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=-1)
 	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(21, 21))
 	parser.add_argument("-vi", "--visu", help="Display graphs", action="store_true")
+	parser.add_argument("-s", "--seed", metavar="n", help="Choose seed", type=int, default=None)
 	args = parser.parse_args()
 	input_n = 13
 	output_n = 2
 	hidden_layers = args.hidden_layer
 	learning_rate = 0.01
-	n = neuralNetwork(input_n, output_n, hidden_layers, learning_rate, sigmoid, args.bias)
+	n = neuralNetwork(input_n, output_n, hidden_layers, learning_rate, sigmoid, args.bias, args.seed)
 
 	fit(args, n)
 	print()
