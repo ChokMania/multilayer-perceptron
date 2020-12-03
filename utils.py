@@ -40,6 +40,9 @@ def check_hidden_layer(hl_list):
 		result = tuple(int(i) for i in hl_list)
 	except:
 		sys.exit("Failed to create hidden layers")
+	for i in result:
+		if i < 1 or i > 9999:
+			sys.exit("Failed to create hidden layers")
 	return result
 
 
@@ -62,7 +65,6 @@ def normalize(df):
 		if feature_name != 0:
 			max_value = df[feature_name].max()
 			min_value = df[feature_name].min()
-			# result[feature_name] = (df[feature_name] / max_value * 0.99) + 0.01
 			result[feature_name] = (df[feature_name] - min_value) / (max_value - min_value)
 	return result
 
@@ -168,7 +170,7 @@ def get_seed(n):
 		else:
 			sys.exit(f"Value '{n}'' is not a correct value, need to be an int")
 	np.random.seed(int(n))
-	print(f"Seed : {np.random.get_state()[1][0]}")
+	print(f"Seed:\t\t{np.random.get_state()[1][0]:>12}\n")
 
 
 def split_size(n):

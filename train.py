@@ -9,16 +9,17 @@ from utils import open_datafile, normalize, save_model, binary_cross_entropy, di
 
 def fit(args, n):
 	epochs = args.epochs
-	# df = args.dataset_train.drop(args.dataset_train.columns[0], axis=1)
 	df = args.dataset_train[[1, 2, 3, 8, 11, 12, 17, 18, 19, 21, 26, 28, 30, 31]]
 	size_train = int(len(df) * args.split / 100)
 	print(f"Total data:\t{len(df):>4} values")
 	print(f"Train data:\t{size_train:>4} values, {args.split:>3}%")
-	print(f"Val data:\t{len(df) - size_train:>4} values, {100 - args.split:>3}% ")
-	print(f"Input:\t{n.input} neurones")
-	print(f"Output:\t{n.output} neurones")
-	train = df.iloc[:size_train, :]  # 80 %
-	test = df.iloc[size_train + 1:, :]  # 20 %
+	print(f"Val data:\t{len(df) - size_train:>4} values, {100 - args.split:>3}%\n")
+	print(f"Input:\t\t{n.input:>4} neurones")
+	for layer in range(len(n.hidden)):
+		print(f"Hidden_{layer + 1}:\t{n.hidden[layer]:>4} neurones")
+	print(f"Output:\t\t{n.output:>4} neurones\n\n")
+	train = df.iloc[:size_train, :]
+	test = df.iloc[size_train + 1:, :]
 	data = normalize(train)
 	validation_data = normalize(test)
 	data = np.array(data)
@@ -60,7 +61,8 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="")
 	parser.add_argument("dataset_train", type=open_datafile)
 	parser.add_argument("-b", "--bias", help="Enable Bias", action="store_true")
-	parser.add_argument("-e", "--epochs", metavar="n", help="Choose number of epochs", type=int, default=200)
+	parser.add_argument("-e", "--epochs", metavar="e", help="Choose number of epochs", type=int, default=200)
+	parser.add_argument("-lr", "--learningrate", metavar="lr", help="Choose learning rate", type=float, default=0.01)
 	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=-1)
 	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(21, 21))
 	parser.add_argument("-vi", "--visu", help="Display graphs", action="store_true")

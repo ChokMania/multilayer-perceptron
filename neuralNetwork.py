@@ -19,16 +19,11 @@ class neuralNetwork:
 		self.add_bias = bias
 		self.lr = learningrate
 		self.activation_function = activation_function
-		self.loss = []
-		self.val_loss = []
-		self.acc = []
-		self.val_acc = []
-		self.bias = []
-		self.bias_lr = 0.01
-		self.beta = 0.9
-		self.sdw = []
-		self.sdb = []
-		self.epsilon = 10**-8
+		self.loss, self.val_loss = [], []
+		self.acc, self.val_acc = [], []
+		self.bias, self.bias_lr = [], 0.01
+		self.sdw, self.sdb = [], []
+		self.beta, self.epsilon = 0.9, 10**-8
 		for i in range(len(self.w)):
 			self.sdw.append(np.zeros(self.w[i].shape))
 			self.bias.append(np.zeros((self.w[i].shape[0], 1)))
@@ -53,13 +48,13 @@ class neuralNetwork:
 				error = output_errors
 			else:
 				error = np.dot(self.w[-(i - 1)].T, error)
-			# self.w[-i] += self.lr * np.dot((error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])), hidden_outputs[-(i + 1)].T)
-			self.sdw[-i] = (self.beta * self.sdw[-i]) + ((1 - self.beta) * np.dot((error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])), hidden_outputs[-(i + 1)].T)**2)
-			self.w[-i] += self.lr * np.dot((error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])), hidden_outputs[-(i + 1)].T) / ((self.sdw[-i])**0.5 + self.epsilon)
+			self.w[-i] += self.lr * np.dot((error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])), hidden_outputs[-(i + 1)].T)
+			# self.sdw[-i] = (self.beta * self.sdw[-i]) + ((1 - self.beta) * np.dot((error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])), hidden_outputs[-(i + 1)].T)**2)
+			# self.w[-i] += self.lr * np.dot((error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])), hidden_outputs[-(i + 1)].T) / ((self.sdw[-i])**0.5 + self.epsilon)
 			if self.add_bias is True:
-				# self.bias[-i] += self.bias_lr * (error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i]))
-				self.sdb[-i] = (self.beta * self.sdb[-i]) + ((1 - self.beta) * (error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i]))**2)
-				self.bias[-i] += self.bias_lr * (error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])) / ((self.sdb[-i])**0.5 + self.epsilon)
+				self.bias[-i] += self.bias_lr * (error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i]))
+				# self.sdb[-i] = (self.beta * self.sdb[-i]) + ((1 - self.beta) * (error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i]))**2)
+				# self.bias[-i] += self.bias_lr * (error * hidden_outputs[-i] * (1.0 - hidden_outputs[-i])) / ((self.sdb[-i])**0.5 + self.epsilon)
 
 	def train(self, inputs_list, targets_list):
 		inputs = np.array(inputs_list, ndmin=2).T
