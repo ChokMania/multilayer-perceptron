@@ -4,7 +4,7 @@ from copy import deepcopy
 import matplotlib.pyplot as plt
 from neuralNetwork import neuralNetwork
 import numpy as np
-from utils import open_datafile, normalize, save_model, binary_cross_entropy, display, check_hidden_layer, get_seed, append_losses, split_size
+from utils import open_datafile, normalize, save_model, display, check_hidden_layer, get_seed, append_losses, split_size
 
 
 def fit(args, n):

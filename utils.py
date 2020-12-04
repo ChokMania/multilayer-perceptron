@@ -166,7 +166,7 @@ def get_seed(n):
 		n = int(n)
 	except (ValueError, TypeError):
 		if n is None:
-			n = np.random.randint(1, 4294967295)
+			n = np.random.randint(1, 2147483647)
 		else:
 			sys.exit(f"Value '{n}'' is not a correct value, need to be an int")
 	np.random.seed(int(n))
