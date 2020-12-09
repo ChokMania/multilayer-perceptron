@@ -17,6 +17,6 @@ if __name__ == "__main__":
 	test = np.array(test)
 	error, acc = binary_cross_entropy(test, n)
 	print(f"Cross Binary Entropy Error = {error:.5f}")
-	print(f"Accuracy = {acc:.5f}")
+	# print(f"Accuracy = {acc:.5f}")
 	if args.visu is True:
 		roc(test, n)

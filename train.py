@@ -29,7 +29,7 @@ def fit(args, n):
 	loss, val_loss, acc, val_acc = append_losses(n, data, validation_data)
 	print(f"epoch {0:>3}/{epochs:<3} - loss: {loss:10.10f} - acc {acc:5.5f} - val_loss: {val_loss:10.10f} - val_acc {val_acc:5.5f}", end="\r")
 	for e in range(epochs):
-		np.random.shuffle(data)
+		# np.random.shuffle(data)
 		for values in data:
 			targets = np.zeros(output_n) + 0.01
 			if values[0] == "M":
@@ -62,11 +62,12 @@ if __name__ == "__main__":
 	parser.add_argument("dataset_train", type=open_datafile)
 	parser.add_argument("-b", "--bias", help="Enable Bias", action="store_true")
 	parser.add_argument("-e", "--epochs", metavar="e", help="Choose number of epochs", type=int, default=200)
-	parser.add_argument("-lr", "--learningrate", metavar="lr", help="Choose learning rate", type=float, default=0.01)
+	parser.add_argument("-lr", "--learningrate", metavar="lr", help="Choose learning rate", type=float, default=0.005)
 	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=-1)
 	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(21, 21))
 	parser.add_argument("-vi", "--visu", help="Display graphs", action="store_true")
 	parser.add_argument("-s", "--seed", metavar="n", help="Choose seed", default=None)
+	parser.add_argument("-m", "--model", help="Save model in different file", action="store_true")
 	parser.add_argument("--split", metavar="[1-99]", help="Choose size of split", choices=(range(1, 100)), type=split_size, default=80)
 
 	args = parser.parse_args()
@@ -74,12 +75,12 @@ if __name__ == "__main__":
 	input_n = 13
 	output_n = 2
 	hidden_layers = args.hidden_layer
-	learning_rate = 0.01
-	n = neuralNetwork(input_n, output_n, hidden_layers, learning_rate, sigmoid, args.bias)
+
+	n = neuralNetwork(input_n, output_n, hidden_layers, args.learningrate, sigmoid, args.bias)
 	fit(args, n)
 	print()
 	if args.visu is True:
 		fig1, ax1 = display(n.loss, n.val_loss, "Loss Trend", "loss", "val_loss")
 		fig2, ax2 = display(n.acc, n.val_acc, "Accuracy Trend", "acc", "val_acc")
 		plt.show()
-	save_model(n)
+	save_model(args.model, n)

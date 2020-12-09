@@ -12,8 +12,10 @@ def on_press(event, var, val_var, fig, ax):
 	if event.button != 1:
 		return
 	x, y = event.xdata, event.ydata
+	if x is None or y is None:
+		return
 	val = int(x)
-	if x is not None and y is not None and val < len(var) and val < len(val_var):
+	if val < len(var) and val < len(val_var):
 		minimum = min(min(var[val:]), min(val_var[val:]))
 		maximum = max(max(var[val:]), max(val_var[val:]))
 		ax[1].set_xlim(val, len(val_var))
@@ -147,18 +149,23 @@ def load_model(file):
 		sys.exit(f"Error can't load file : {file}")
 
 
-def save_model(n):
+def save_model(model, n):
 	i = 0
 	if not path.exists("models"):
 		try:
 			mkdir("models")
 		except OSError:
 			sys.exit("Creation of the directory %s failed" % path)
-	while path.exists("models/model_" + str(i) + ".p"):
-		i += 1
-	with open("models/model_" + str(i) + ".p", "wb") as fp:
-		pickle.dump(n, fp)
-		print(f"Model saved in file models/model_{str(i)}.p")
+	if model is True:
+		while path.exists("models/model_" + str(i) + ".p"):
+			i += 1
+		with open("models/model_" + str(i) + ".p", "wb") as fp:
+			pickle.dump(n, fp)
+			print(f"Model saved in file models/model_{str(i)}.p")
+	else:
+		with open("models/model.p", "wb") as fp:
+			pickle.dump(n, fp)
+			print("Model saved in file models/model.p")
 
 
 def get_seed(n):
