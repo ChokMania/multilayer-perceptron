@@ -64,7 +64,7 @@ if __name__ == "__main__":
 	parser.add_argument("-e", "--epochs", metavar="e", help="Choose number of epochs", type=int, default=500)
 	parser.add_argument("-lr", "--learningrate", metavar="lr", help="Choose learning rate", type=float, default=0.01)
 	parser.add_argument("-p", "--patience", metavar="n", help="Choose patience for early stopping", type=int, default=50)
-	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(10, 50))
+	parser.add_argument("-hl", "--hidden_layer", metavar="(n1, n2, ...)", help="Make your own hidden layers", type=check_hidden_layer, default=(100, 50))
 	parser.add_argument("-vi", "--visu", help="Display graphs", action="store_true")
 	parser.add_argument("-s", "--seed", metavar="n", help="Choose seed", default=None)
 	parser.add_argument("-m", "--model", help="Save model in different file", action="store_true")
